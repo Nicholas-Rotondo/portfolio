@@ -7,7 +7,7 @@ export default function Home() {
         <div className="avatar">👋</div>
         <div className="hero-text">
           <h1>
-            Developer by day,
+            Builder by day,
             <br />
             <span>storyteller by night</span>
           </h1>
