@@ -460,6 +460,40 @@ a {
   color: var(--text-secondary);
 }
 
+/* Full Story Page */
+.story-full {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.story-full * {
+  max-width: 100%;
+}
+
+.story-title-full {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+.story-paragraph {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.pdf-viewer {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .nav {
@@ -487,4 +521,6 @@ a {
   .stories-grid {
     grid-template-columns: 1fr;
   }
+
+
 }
