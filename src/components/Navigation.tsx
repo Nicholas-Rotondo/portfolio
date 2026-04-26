@@ -10,6 +10,7 @@ export default function Navigation() {
     { href: '/', label: 'Home' },
     { href: '/coding', label: 'Projects' },
     { href: '/stories', label: 'Stories' },
+    { href: '/rotondo-farms', label: 'Rotondo Farms' },
   ];
 
   return (
