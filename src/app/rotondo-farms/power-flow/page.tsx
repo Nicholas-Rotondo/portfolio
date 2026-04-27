@@ -48,6 +48,15 @@ const DEFAULT_CIRCUITS: Circuit[] = [
             { label: 'Moisture sensor', sub: 'A0 · wet ~10900', watts: 0.033, color: '#1a7a4a', textColor: '#fff' },
         ],
     },
+    {
+        id: 'light',
+        title: 'GROW LIGHT CIRCUIT (120V AC)',
+        chargerMax: 120,
+        components: [
+            { label: 'Wall outlet', sub: '120V AC', watts: 120, color: '#374151', textColor: '#fff' },
+            { label: 'Mars Hydro TS600', sub: '120V · 100W actual', watts: 100, color: '#7c2d12', textColor: '#fff' },
+        ],
+    },
 ];
 
 const BUDGET_ROWS = [
@@ -67,8 +76,9 @@ export default function PowerFlow() {
     const pumpDraw = circuits[0].components.slice(1, 3).reduce((s, c) => s + c.watts, 0);
     const piDraw = circuits[1].components.slice(1).reduce((s, c) => s + c.watts, 0)
         + circuits[2].components.reduce((s, c) => s + c.watts, 0);
-    const totalDraw = pumpDraw + piDraw;
-    const combinedSupply = 20;
+    const lightDraw = circuits[3].components[1].watts;
+    const totalDraw = pumpDraw + piDraw + lightDraw;
+    const combinedSupply = 120;
     const allWithinLimits = pumpDraw <= 10 && piDraw <= 10;
 
     const updateWatts = (circuitId: string, compIdx: number, val: number) => {
@@ -115,7 +125,7 @@ export default function PowerFlow() {
                             <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#fff', marginBottom: '0.25rem' }}>6-outlet strip</p>
                             <p style={{ fontSize: '0.7rem', color: '#aaa', marginBottom: '0.5rem' }}>Max: 1,800 W</p>
                             <div style={{ display: 'flex', gap: '4px', marginBottom: '0.5rem' }}>
-                                {['#1a7a4a', '#3b3bcc', '#444', '#444', '#444', '#444'].map((bg, i) => (
+                                {['#1a7a4a', '#3b3bcc', '#7c2d12', '#444', '#444', '#444'].map((bg, i) => (
                                     <div key={i} style={{ width: '18px', height: '18px', borderRadius: '3px', background: bg }} />
                                 ))}
                             </div>
@@ -124,6 +134,7 @@ export default function PowerFlow() {
                         <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
                             <div>↓ USB charger (pump)</div>
                             <div>↓ USB charger (Pi)</div>
+                            <div>↓ Mars Hydro TS600</div>
                             <div>↓ other devices</div>
                         </div>
                     </div>
@@ -150,6 +161,20 @@ export default function PowerFlow() {
                                             }}>
                                                 <p style={{ fontSize: '0.8rem', fontWeight: 600, color: comp.textColor, marginBottom: '0.2rem' }}>{comp.label}</p>
                                                 <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)', marginBottom: '0.5rem' }}>{comp.sub}</p>
+                                                {['USB charger', 'Raspberry Pi Zero 2W', 'Mars Hydro TS600'].includes(comp.label) && (
+                                                    <span style={{
+                                                        fontSize: '0.6rem',
+                                                        color: 'rgba(255,255,255,0.5)',
+                                                        border: '1px solid rgba(255,255,255,0.2)',
+                                                        borderRadius: '3px',
+                                                        padding: '1px 5px',
+                                                        display: 'inline-block',
+                                                        marginBottom: '0.4rem',
+                                                        letterSpacing: '0.04em'
+                                                    }}>
+                                                    6-outlet strip
+                                                </span>
+                                                )}
                                                 {isPassive ? (
                                                     <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)' }}>— passive —</span>
                                                 ) : (
