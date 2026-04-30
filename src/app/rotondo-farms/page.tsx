@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-type SensorData = {
+type Sensor = {
+    channel: string;
     percent: number;
     status: 'Wet' | 'OK' | 'Dry';
     raw: number;
@@ -15,26 +16,26 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function RotondoFarms() {
-    const [data, setData] = useState<SensorData | null>(null);
+    const [sensors, setSensors] = useState<Sensor[]>([]);
     const [lastUpdated, setLastUpdated] = useState<string>('');
     const [error, setError] = useState(false);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const res = await fetch('YOUR_TUNNEL_URL/data');
-    //             const json = await res.json();
-    //             setData(json);
-    //             setLastUpdated(new Date().toLocaleTimeString());
-    //             setError(false);
-    //         } catch {
-    //             setError(true);
-    //         }
-    //     };
-    //     fetchData();
-    //     const interval = setInterval(fetchData, 5000);
-    //     return () => clearInterval(interval);
-    // }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch('https://dashboard.rotondofarms.com/data');
+                const json = await res.json();
+                setSensors(json.sensors);
+                setLastUpdated(new Date().toLocaleTimeString());
+                setError(false);
+            } catch {
+                setError(true);
+            }
+        };
+        fetchData();
+        const interval = setInterval(fetchData, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="container">
@@ -71,47 +72,50 @@ export default function RotondoFarms() {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
                 gap: '1rem'
             }}>
-                <div className="home-card" style={{ padding: '2rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <div className="home-card-icon" style={{ background: '#e8f5e9', fontSize: '1.25rem' }}>💧</div>
-                        {data && (
+                {error && (
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>⚠️ Could not reach sensor</p>
+                )}
+                {sensors.map((sensor) => (
+                    <div key={sensor.channel} className="home-card" style={{ padding: '2rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <div className="home-card-icon" style={{ background: '#e8f5e9', fontSize: '1.25rem' }}>💧</div>
                             <span style={{
                                 fontSize: '0.75rem',
                                 fontWeight: 600,
                                 padding: '0.25rem 0.75rem',
                                 borderRadius: '100px',
-                                background: STATUS_COLORS[data.status],
+                                background: STATUS_COLORS[sensor.status],
                                 color: 'white'
                             }}>
-                                {data.status}
+                                {sensor.status}
                             </span>
-                        )}
+                        </div>
+                        <h4 style={{ marginBottom: '0.5rem' }}>Soil Moisture</h4>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
+                            Sensor {sensor.channel}
+                        </p>
+                        <div style={{ background: 'var(--accent-light)', borderRadius: '999px', height: '10px', marginBottom: '0.75rem', overflow: 'hidden' }}>
+                            <div style={{
+                                height: '100%',
+                                borderRadius: '999px',
+                                width: `${sensor.percent}%`,
+                                background: STATUS_COLORS[sensor.status],
+                                transition: 'width 0.8s ease, background 0.8s ease'
+                            }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                            <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '2.5rem', fontWeight: 400 }}>
+                                {sensor.percent}%
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                Raw: {sensor.raw}
+                            </span>
+                        </div>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '1rem' }}>
+                            {lastUpdated ? `Updated ${lastUpdated}` : 'Connecting...'}
+                        </p>
                     </div>
-                    <h4 style={{ marginBottom: '0.5rem' }}>Soil Moisture</h4>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1.25rem' }}>
-                        Sensor A0 — Plant 1
-                    </p>
-                    <div style={{ background: 'var(--accent-light)', borderRadius: '999px', height: '10px', marginBottom: '0.75rem', overflow: 'hidden' }}>
-                        <div style={{
-                            height: '100%',
-                            borderRadius: '999px',
-                            width: data ? `${data.percent}%` : '0%',
-                            background: data ? STATUS_COLORS[data.status] : '#ccc',
-                            transition: 'width 0.8s ease, background 0.8s ease'
-                        }} />
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '2.5rem', fontWeight: 400 }}>
-                            {data ? `${data.percent}%` : '--'}
-                        </span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            {data ? `Raw: ${data.raw}` : ''}
-                        </span>
-                    </div>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '1rem' }}>
-                        {error ? '⚠️ Could not reach sensor' : lastUpdated ? `Updated ${lastUpdated}` : 'Disabled for now'}
-                    </p>
-                </div>
+                ))}
             </div>
 
         </div>
