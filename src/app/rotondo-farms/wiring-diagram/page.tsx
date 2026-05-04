@@ -8,10 +8,10 @@ export default function WiringDiagram() {
                 Rotondo Farms
             </a>
             <div style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontFamily: 'DM Serif Display, serif', fontWeight: 400, fontSize: '2rem', marginBottom: '0.25rem' }}>Wiring Diagram</h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Full breadboard and GPIO wiring reference</p>
+                <h2 style={{ fontFamily: 'DM Serif Display, serif', fontWeight: 400, fontSize: '2rem', marginBottom: '0.25rem', textAlign: 'center' }}>Wiring Diagram</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'center'  }}>Full breadboard and GPIO wiring reference</p>
             </div>
-            <div style={{ overflowX: 'auto', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ overflowX: 'auto', width: '100%', display: 'flex', justifyContent: 'center', margin: '0 auto' }}>
                 <iframe
                     src="/wiring-diagram.html"
                     style={{ width: '80%', height: '90vh', border: 'none', borderRadius: '12px' }}
