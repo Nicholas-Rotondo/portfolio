@@ -64,6 +64,13 @@ export default function RotondoFarms() {
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Circuit diagram &amp; live power budget</p>
                     </div>
                 </Link>
+                <Link href="/rotondo-farms/wiring-diagram" style={{ textDecoration: 'none' }}>
+                    <div className="home-card" style={{ cursor: 'pointer', padding: '1.5rem' }}>
+                        <div className="home-card-icon" style={{ background: '#e8f5e9', fontSize: '1.1rem', marginBottom: '0.75rem' }}>🔌</div>
+                        <h4 style={{ marginBottom: '0.25rem' }}>Wiring Diagram</h4>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Breadboard layout &amp; GPIO connections</p>
+                    </div>
+                </Link>
             </div>
 
             {/* Sensor Grid */}

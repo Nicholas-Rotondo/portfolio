@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rotondo Farms — Wiring Diagram</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d1117; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
+    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #0d1117; z-index: 9999; }
+    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
+    #__bundler_placeholder { color: #999; font-size: 14px; }
+  </style>
+  <noscript>
+    <style>#__bundler_loading { display: none; }</style>
+    <div style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
+      This page requires JavaScript to display.
+    </div>
+  </noscript>
+</head>
+<body>
+  <div id="__bundler_thumbnail">
+  <svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="8" width="28" height="74" rx="3" fill="#1a7a3c"></rect>
+    <rect x="24" y="14" width="5" height="50" fill="#0d1117" rx="1"></rect>
+    <path d="M29,20 C48,20 48,14 62,14" stroke="#ef4444" stroke-width="1.2" fill="none"></path>
+    <path d="M29,27 C48,27 48,20 62,20" stroke="#3b82f6" stroke-width="1.2" fill="none"></path>
+    <path d="M29,34 C48,34 48,26 62,26" stroke="#f97316" stroke-width="1.2" fill="none"></path>
+    <path d="M29,41 C48,41 48,32 62,32" stroke="#92400e" stroke-width="1.2" fill="none"></path>
+    <rect x="60" y="8" width="34" height="74" rx="2" fill="#e8e4d8"></rect>
+    <rect x="62" y="12" width="4" height="66" fill="#dedad0"></rect>
+    <rect x="88" y="12" width="4" height="66" fill="#dedad0"></rect>
+    <rect x="66" y="14" width="18" height="12" rx="1" fill="#292524" stroke="#78716c" stroke-width="0.5"></rect>
+    <rect x="98" y="8" width="28" height="14" rx="2" fill="#1e3a8a" stroke="#3b82f6" stroke-width="0.6"></rect>
+    <rect x="98" y="28" width="28" height="10" rx="1" fill="#1c1917" stroke="#0ea5e9" stroke-width="0.6"></rect>
+    <rect x="98" y="42" width="28" height="10" rx="1" fill="#1c1917" stroke="#22c55e" stroke-width="0.6"></rect>
+    <rect x="98" y="56" width="28" height="10" rx="1" fill="#1c1917" stroke="#f59e0b" stroke-width="0.6"></rect>
+    <rect x="98" y="70" width="28" height="10" rx="1" fill="#1c1917" stroke="#a855f7" stroke-width="0.6"></rect>
+  </svg>
+</div>
+  <div id="__bundler_loading">Unpacking...</div>
+
+  <script>
+    
+document.addEventListener('DOMContentLoaded', async function() {
+  const loading = document.getElementById('__bundler_loading');
+  function setStatus(msg) { if (loading) loading.textContent = msg; }
+
+  // Error sink persists across replaceWith since it's on window, not the DOM.
+  window.addEventListener('error', function(e) {
+    var p = document.body || document.documentElement;
+    var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
+    d.id = '__bundler_err';
+    d.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;font:12px/1.4 ui-monospace,monospace;background:#2a1215;color:#ff8a80;padding:10px 14px;border-radius:8px;border:1px solid #5c2b2e;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto';
+    d.textContent = (d.textContent ? d.textContent + String.fromCharCode(10) : '') +
+      '[bundle] ' + (e.message || e.type) +
+      (e.filename ? ' (' + e.filename.slice(0, 60) + ':' + e.lineno + ')' : '');
+  }, true);
+
+  try {
+    const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
+    const templateEl = document.querySelector('script[type="__bundler/template"]');
+    if (!manifestEl || !templateEl) {
+      setStatus('Error: missing bundle data');
+      console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
+      return;
+    }
+
+    const manifest = JSON.parse(manifestEl.textContent);
+    let template = JSON.parse(templateEl.textContent);
+
+    const uuids = Object.keys(manifest);
+    setStatus('Unpacking ' + uuids.length + ' assets...');
+
+    const blobUrls = {};
+    await Promise.all(uuids.map(async (uuid) => {
+      const entry = manifest[uuid];
+      try {
+        const binaryStr = atob(entry.data);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+        let finalBytes = bytes;
+        if (entry.compressed) {
+          if (typeof DecompressionStream !== 'undefined') {
+            const ds = new DecompressionStream('gzip');
+            const writer = ds.writable.getWriter();
+            const reader = ds.readable.getReader();
+            writer.write(bytes);
+            writer.close();
+            const chunks = [];
+            let totalLen = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              chunks.push(value);
+              totalLen += value.length;
+            }
+            finalBytes = new Uint8Array(totalLen);
+            let offset = 0;
+            for (const chunk of chunks) { finalBytes.set(chunk, offset); offset += chunk.length; }
+          } else {
+            console.warn('DecompressionStream not available, asset ' + uuid + ' may not render');
+          }
+        }
+
+        blobUrls[uuid] = URL.createObjectURL(new Blob([finalBytes], { type: entry.mime }));
+      } catch (err) {
+        console.error('Failed to decode asset ' + uuid + ':', err);
+        blobUrls[uuid] = URL.createObjectURL(new Blob([], { type: entry.mime }));
+      }
+    }));
+
+    const extResEl = document.querySelector('script[type="__bundler/ext_resources"]');
+    const extResources = extResEl ? JSON.parse(extResEl.textContent) : [];
+    const resourceMap = {};
+    for (const entry of extResources) {
+      if (blobUrls[entry.uuid]) resourceMap[entry.id] = blobUrls[entry.uuid];
+    }
+
+    setStatus('Rendering...');
+    for (const uuid of uuids) template = template.split(uuid).join(blobUrls[uuid]);
+
+    // Strip integrity + crossorigin — blob URLs from a file:// document inherit
+    // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
+    // The manifest bytes are ours; SRI protects against CDN compromise, not this.
+    template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
+
+    const resourceScript = '<script>window.__resources = ' +
+      JSON.stringify(resourceMap).split('</' + 'script>').join('<\\/' + 'script>') +
+      ';</' + 'script>';
+    // Inject after <head> so the DOCTYPE stays first; prepending the script
+    // would push the parser into quirks mode. DOMParser always emits a <head>
+    // (synthesizing one if the source HTML omitted it) but may carry
+    // attributes through, so match the full opening tag. slice() rather than
+    // replace() keeps us clear of $-pattern substitution in resourceScript.
+    const headOpen = template.match(/<head[^>]*>/i);
+    if (headOpen) {
+      const i = headOpen.index + headOpen[0].length;
+      template = template.slice(0, i) + resourceScript + template.slice(i);
+    }
+
+    // Parse the template and swap the root element. Scripts inserted via
+    // DOMParser/replaceWith are inert per spec — re-create each with
+    // createElement so they execute, awaiting onload for src scripts to
+    // preserve ordering (React before ReactDOM before Babel before text/babel).
+    const doc = new DOMParser().parseFromString(template, 'text/html');
+    document.documentElement.replaceWith(doc.documentElement);
+    const dead = Array.from(document.scripts);
+    for (const old of dead) {
+      const s = document.createElement('script');
+      for (const a of old.attributes) s.setAttribute(a.name, a.value);
+      s.textContent = old.textContent;
+      // text/babel scripts with a src: fetch and inline. transformScriptTags
+      // does XHR against the src, but blob:null/ from a file:// origin is
+      // silently dropped. Inlining makes it a plain inline babel script,
+      // which transformScriptTags handles unconditionally.
+      if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
+        const r = await fetch(s.src);
+        s.textContent = await r.text();
+        s.removeAttribute('src');
+      }
+      const p = s.src ? new Promise(function(r) { s.onload = s.onerror = r; }) : null;
+      old.replaceWith(s);
+      if (p) await p;
+    }
+    // Babel standalone auto-transforms type=text/babel on DOMContentLoaded,
+    // which fired before we swapped the document. Trigger manually if present.
+    if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
+      window.Babel.transformScriptTags();
+    }
+  } catch (err) {
+    setStatus('Error unpacking: ' + err.message);
+    console.error('Bundle unpack error:', err);
+  }
+});
+
+  </script>
+
+  <script type="__bundler/manifest">
+{}
+  </script>
+
+  <script type="__bundler/ext_resources">
+[]
+  </script>
+
+  <script type="__bundler/template">
+"<!DOCTYPE html>\n<html lang=\"en\"><head>\n<meta charset=\"UTF-8\">\n<title>Rotondo Farms — Wiring Diagram<\u002Ftitle>\n<style>\n  * { box-sizing: border-box; margin: 0; padding: 0; }\n  body {\n    background: #0d1117;\n    font-family: 'Courier New', monospace;\n    color: #e6edf3;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    padding: 16px 20px 60px;\n    min-height: 100vh;\n  }\n  h1 { font-size: 10px; color: #4b5563; letter-spacing: .24em; text-transform: uppercase; margin-bottom: 12px; }\n  .wrap { position: relative; overflow: visible; }\n  #tip {\n    position: fixed; background: #161b22; border: 1px solid #30363d;\n    padding: 5px 10px; border-radius: 4px; font-size: 11px; color: #e6edf3;\n    pointer-events: none; display: none; white-space: nowrap; z-index: 99;\n  }\n  .legend {\n    margin-top: 28px; display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n    gap: 20px 36px; max-width: 1400px; width: 100%;\n  }\n  .leg-section {}\n  .leg-title { font-size: 9px; color: #4b5563; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 9px; padding-bottom: 4px; border-bottom: 1px solid #1f2937; }\n  .leg-row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; font-size: 10px; color: #9ca3af; }\n  .sw { width: 26px; height: 3px; border-radius: 2px; flex-shrink: 0; }\n  .sw-dash { width: 26px; height: 0; border-top: 3px dashed; flex-shrink: 0; }\n  .sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }\n  .tag { font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 4px; }\n  .confirmed { background: #14532d; color: #86efac; }\n  .unknown { background: #451a03; color: #fcd34d; }\n<\u002Fstyle>\n\n\n<\u002Fhead>\n<body>\n<h1>Rotondo Farms · Pi Zero 2W · ADS1115 · 4-CH Relay · Soil Moisture Sensors<\u002Fh1>\n\n<div class=\"wrap\">\n<svg id=\"diagram\" width=\"1400\" height=\"1020\" viewBox=\"0 0 1400 1020\"><\u002Fsvg>\n<div id=\"tip\"><\u002Fdiv>\n<\u002Fdiv>\n\n<div class=\"legend\">\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">Pi → Breadboard Power &amp; I²C<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#ef4444\"><\u002Fdiv>Red — Pin 1 (3V3) → Rail + <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#3b82f6\"><\u002Fdiv>Blue — Pin 9 (GND) → Rail − <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#f97316\"><\u002Fdiv>Orange — Pin 5 (SCL) → ADS c13 <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#92400e\"><\u002Fdiv>Brown — Pin 3 (SDA) → ADS c12 <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n  <\u002Fdiv>\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">Pi → Relay Module (external)<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#6b7280\"><\u002Fdiv>Grey/Blk/Wht — Pin 2 (5V) → Relay VCC <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#7c3aed\"><\u002Fdiv>Ylw/Pur/Brn — Pin 6 (GND) → Relay GND <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#f97316\"><\u002Fdiv>Orange — Pin 13 (GPIO27) → Relay IN1 (active LOW) <span class=\"tag confirmed\">✓<\u002Fspan><\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw-dash\" style=\"border-color:#9ca3af\"><\u002Fdiv>Unknown — Pin 11 (GPIO17) → Float Switch <span class=\"tag unknown\">?<\u002Fspan><\u002Fdiv>\n  <\u002Fdiv>\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">ADS1115 Power (on breadboard)<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#a855f7\"><\u002Fdiv>Purple — VDD → row 10 → Rail +<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sw\" style=\"background:#e5e7eb\"><\u002Fdiv>White — GND → row 11 → Rail −<\u002Fdiv>\n  <\u002Fdiv>\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">Moisture Sensor AOUT → ADS1115<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sq\" style=\"background:#0ea5e9\"><\u002Fdiv>Grey — German Chamomile A0 → d15<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sq\" style=\"background:#22c55e\"><\u002Fdiv>Red — Peppermint A1 → row 17<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sq\" style=\"background:#f59e0b\"><\u002Fdiv>Yellow — English Lavender A2 → row 18<\u002Fdiv>\n    <div class=\"leg-row\"><div class=\"sq\" style=\"background:#a855f7\"><\u002Fdiv>Green — Borage A3 → row 19<\u002Fdiv>\n  <\u002Fdiv>\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">Pump Power Circuit (separate from Pi)<\u002Fdiv>\n    <div class=\"leg-row\" style=\"font-size:9.5px;color:#6b7280;line-height:1.6\">\n      5V USB charger → Relay K1 COM<br>\n      Relay K1 NO → Pump (+)<br>\n      Charger GND + Pump GND tied at Relay GND<br>\n      GPIO27 LOW → K1 closes → Pump ON\n    <\u002Fdiv>\n  <\u002Fdiv>\n  <div class=\"leg-section\">\n    <div class=\"leg-title\">Thresholds &amp; Safety<\u002Fdiv>\n    <div class=\"leg-row\" style=\"font-size:9.5px;color:#6b7280;line-height:1.6\">\n      Wet ≈ 10,900 · Dry ≈ 26,500<br>\n      Pump ON: raw &gt; 20,000<br>\n      Pump OFF: raw &lt; 15,000<br>\n      Max runtime: 30 s · Float: LOW=water, HIGH=empty\n    <\u002Fdiv>\n  <\u002Fdiv>\n<\u002Fdiv>\n\n<script>\n(function(){\n  const svg = document.getElementById('diagram');\n  const NS  = 'http://www.w3.org/2000/svg';\n  const tip = document.getElementById('tip');\n\n  /* helpers */\n  function mk(tag,a,t){ const e=document.createElementNS(NS,tag); for(const[k,v]of Object.entries(a||{}))e.setAttribute(k,v); if(t!==undefined)e.textContent=t; return e; }\n  const g    = a         => mk('g',a||{});\n  const rect = (x,y,w,h,a)=>mk('rect',{x,y,width:w,height:h,...a});\n  const circ = (cx,cy,r,a)=>mk('circle',{cx,cy,r,...a});\n  const text = (x,y,s,a) =>mk('text',{x,y,...a},s);\n  const line = (x1,y1,x2,y2,a)=>mk('line',{x1,y1,x2,y2,...a});\n  const path = (d,a)=>mk('path',{d,...a});\n\n  function bezier(x1,y1,x2,y2,color,dashed,sw){\n    const dx=Math.abs(x2-x1)*0.45;\n    const d=`M${x1},${y1} C${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`;\n    const a={d,fill:'none',stroke:color,'stroke-width':sw||2.4,'stroke-linecap':'round'};\n    if(dashed)a['stroke-dasharray']='6,4';\n    return mk('path',a);\n  }\n\n  function vwire(x1,y1,x2,y2,color,dashed,sw){\n    // L-shaped wire: horizontal then vertical\n    const mid=(x1+x2)/2;\n    const d=`M${x1},${y1} L${mid},${y1} L${mid},${y2} L${x2},${y2}`;\n    const a={d,fill:'none',stroke:color,'stroke-width':sw||2.4,'stroke-linecap':'round','stroke-linejoin':'round'};\n    if(dashed)a['stroke-dasharray']='6,4';\n    return mk('path',a);\n  }\n\n  /* palette */\n  const RED='#ef4444', BLUE='#3b82f6', ORANGE='#f97316', BROWN='#92400e';\n  const GRAY='#9ca3af', PURPLE='#a855f7', WHITE='#e5e7eb', YELLOW='#fbbf24';\n  const GREEN='#22c55e', DARKPURPLE='#7c3aed';\n  const S0='#0ea5e9', S1='#22c55e', S2='#f59e0b', S3='#a855f7';\n\n  /* ═══════════════════════════════════════\n     ZONE 1 — RASPBERRY PI ZERO 2W  x=24\n  ═══════════════════════════════════════ */\n  const PI={x:24,y:60,w:210,h:700};\n  const HDR_Y0=PI.y+58, RH=16;\n  const P_L=PI.x+PI.w-48, P_R=PI.x+PI.w-28;\n\n  const piG=g(); svg.appendChild(piG);\n  piG.appendChild(rect(PI.x,PI.y,PI.w,PI.h,{fill:'#1a7a3c',rx:8,stroke:'#145e2d','stroke-width':2}));\n  piG.appendChild(rect(PI.x,PI.y+60,13,22,{fill:'#888',rx:1}));\n  piG.appendChild(rect(PI.x,PI.y+96,13,22,{fill:'#888',rx:1}));\n  piG.appendChild(rect(PI.x+46,PI.y+148,54,54,{fill:'#111',rx:2,stroke:'#333','stroke-width':1}));\n  piG.appendChild(text(PI.x+73,PI.y+178,'BCM2710A1',{'font-size':'6px','text-anchor':'middle',fill:'#333','font-family':'Courier New'}));\n  piG.appendChild(rect(PI.x+42,PI.y+PI.h-7,32,9,{fill:'#aaa',rx:1}));\n  piG.appendChild(text(PI.x+PI.w/2-16,PI.y+24,'Pi Zero 2W',{fill:'#fff','font-size':'11px','font-weight':'bold','text-anchor':'middle','font-family':'Courier New'}));\n  piG.appendChild(text(PI.x+PI.w/2-16,PI.y+37,'BCM2710A1  1GHz',{fill:'#2d6a40','font-size':'7px','text-anchor':'middle','font-family':'Courier New'}));\n  piG.appendChild(rect(P_L-14,HDR_Y0-10,P_R-P_L+32,20*RH+8,{fill:'#0d1117',rx:2}));\n\n  const PINS=[\n    [1,'3V3','3v3'],[2,'5V','5v'],[3,'GPIO2/SDA','gpio'],[4,'5V','5v'],\n    [5,'GPIO3/SCL','gpio'],[6,'GND','gnd'],[7,'GPIO4','gpio'],[8,'GPIO14','gpio'],\n    [9,'GND','gnd'],[10,'GPIO15','gpio'],[11,'GPIO17','gpio'],[12,'GPIO18','gpio'],\n    [13,'GPIO27','gpio'],[14,'GND','gnd'],[15,'GPIO22','gpio'],[16,'GPIO23','gpio'],\n    [17,'3V3','3v3'],[18,'GPIO24','gpio'],[19,'GPIO10','gpio'],[20,'GND','gnd'],\n    [21,'GPIO9','gpio'],[22,'GPIO25','gpio'],[23,'GPIO11','gpio'],[24,'GPIO8','gpio'],\n    [25,'GND','gnd'],[26,'GPIO7','gpio'],[27,'ID_SD','i2c'],[28,'ID_SC','i2c'],\n    [29,'GPIO5','gpio'],[30,'GND','gnd'],[31,'GPIO6','gpio'],[32,'GPIO12','gpio'],\n    [33,'GPIO13','gpio'],[34,'GND','gnd'],[35,'GPIO19','gpio'],[36,'GPIO16','gpio'],\n    [37,'GPIO26','gpio'],[38,'GPIO20','gpio'],[39,'GND','gnd'],[40,'GPIO21','gpio'],\n  ];\n\n  const PIN_WIRE={\n    1: {color:RED,        label:'3V3 → Breadboard Rail +',      confirmed:true},\n    2: {color:GRAY,       label:'5V → Relay VCC',                confirmed:true},\n    3: {color:BROWN,      label:'SDA → ADS1115 c12',             confirmed:true},\n    5: {color:ORANGE,     label:'SCL → ADS1115 c13',             confirmed:true},\n    6: {color:DARKPURPLE, label:'GND → Relay GND',               confirmed:true},\n    9: {color:BLUE,       label:'GND → Breadboard Rail −',       confirmed:true},\n    11:{color:GRAY,       label:'GPIO17 → Float Switch (unknown)',confirmed:false,dashed:true},\n    13:{color:ORANGE,     label:'GPIO27 → Relay IN1 (active LOW)',confirmed:true},\n  };\n\n  function ptCol(t){return t==='5v'?'#dc2626':t==='3v3'?'#ea580c':t==='gnd'?'#374151':t==='i2c'?'#0891b2':'#166534';}\n\n  const pinXY={};\n  for(let row=0;row<20;row++){\n    const cy=HDR_Y0+row*RH;\n    for(let s=0;s<2;s++){\n      const pin=PINS[row*2+s];\n      const cx=s===0?P_L:P_R;\n      const pw=PIN_WIRE[pin[0]];\n      const fill=pw?pw.color:ptCol(pin[2]);\n      const used=!!pw;\n      const sq=rect(cx-5,cy-5,10,10,{fill,rx:1,stroke:used?'#fff':'none','stroke-width':used?1.2:0,'data-label':`Pin ${pin[0]}: ${pin[1]}`});\n      piG.appendChild(sq);\n      pinXY[pin[0]]={x:cx,y:cy};\n      if(used){\n        piG.appendChild(text(s===0?cx-14:cx+14,cy+3.5,`${pin[0]}: ${pin[1]}`,{fill,'font-size':'8px','font-weight':'bold','text-anchor':s===0?'end':'start','font-family':'Courier New'}));\n      } else {\n        piG.appendChild(text(s===0?cx-9:cx+9,cy+3,String(pin[0]),{fill:'#1f2937','font-size':'7px','text-anchor':s===0?'end':'start','font-family':'Courier New'}));\n      }\n    }\n  }\n  piG.appendChild(text(P_L+1,HDR_Y0-16,'40-pin GPIO',{fill:'#374151','font-size':'7px','letter-spacing':'.12em','font-family':'Courier New'}));\n\n  /* ═══════════════════════════════════════\n     ZONE 2 — BREADBOARD  x=310\n  ═══════════════════════════════════════ */\n  const BBX=310, BBY=40, PX=20, PY=28, RHB=13, ROWS=63;\n  const CX={'pL+':0,'pL-':14,a:33,b:46,c:59,d:72,e:85,f:112,g:125,h:138,i:151,j:164,'pR-':183,'pR+':197};\n  const BB_IW=210, BB_W=PX*2+BB_IW, BB_H=PY*2+ROWS*RHB;\n\n  const bbG=g(); svg.appendChild(bbG);\n  bbG.appendChild(rect(BBX,BBY,BB_W,BB_H,{fill:'#e8e4d8',rx:5,stroke:'#ccc','stroke-width':1.5}));\n  bbG.appendChild(rect(BBX+PX+CX.e+10,BBY+PY,CX.f-CX.e-20,ROWS*RHB,{fill:'#ccc8bc'}));\n  bbG.appendChild(rect(BBX+PX,BBY+PY,CX.a-8,ROWS*RHB,{fill:'#dedad0'}));\n  bbG.appendChild(rect(BBX+PX+CX.j+9,BBY+PY,BB_IW-CX.j-9,ROWS*RHB,{fill:'#dedad0'}));\n\n  for(const[col,color]of[['pL+',RED],['pL-',BLUE],['pR-',BLUE],['pR+',RED]]){\n    const x=BBX+PX+CX[col];\n    bbG.appendChild(line(x,BBY+PY,x,BBY+PY+ROWS*RHB,{stroke:color,'stroke-width':2.5,opacity:.22}));\n  }\n  for(const col of['a','b','c','d','e','f','g','h','i','j']){\n    const x=BBX+PX+CX[col];\n    for(const y of[BBY+PY-9,BBY+BB_H-6])\n      bbG.appendChild(text(x,y,col,{fill:'#7a7060','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n  }\n  for(const[s,col,color]of[['+','pL+',RED],['-','pL-',BLUE],['-','pR-',BLUE],['+','pR+',RED]]){\n    const x=BBX+PX+CX[col];\n    for(const y of[BBY+PY-9,BBY+BB_H-6])\n      bbG.appendChild(text(x,y,s,{fill:color,'font-size':'8px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  }\n  for(let r=0;r<=60;r+=5){\n    const y=BBY+PY+r*RHB+RHB/2;\n    for(const tx of[BBX+PX+CX.a-17,BBX+PX+CX.j+17])\n      bbG.appendChild(text(tx,y+3,String(r),{fill:'#b0a890','font-size':'7px','text-anchor':'middle','font-family':'Courier New'}));\n  }\n  function hXY(row,col){return{x:BBX+PX+CX[col],y:BBY+PY+row*RHB+RHB/2};}\n  for(let r=0;r<ROWS;r++){\n    for(const col of Object.keys(CX)){\n      const{x,y}=hXY(r,col);\n      bbG.appendChild(circ(x,y,col.startsWith('p')?1.8:2.4,{fill:'#6e6a5e',stroke:'#524e42','stroke-width':.3}));\n    }\n  }\n  svg.appendChild(text(BBX+BB_W/2,BBY-12,'BREADBOARD  (rows 0–63)',{fill:'#6b7280','font-size':'9px','text-anchor':'middle','font-family':'Courier New','letter-spacing':'.14em'}));\n\n  /* ── ADS1115 on breadboard, rows 10-21, cols a-b ── */\n  const ADS_R0=10;\n  const adsx0=BBX+PX+CX.a-5, adsx1=BBX+PX+CX.b+8;\n  const adsy0=BBY+PY+ADS_R0*RHB-3, adsy1=BBY+PY+22*RHB+3;\n  const adsW=adsx1-adsx0, adsH=adsy1-adsy0;\n  const adsG=g(); svg.appendChild(adsG);\n  adsG.appendChild(rect(adsx0,adsy0,adsW,adsH,{fill:'#292524',rx:3,stroke:'#78716c','stroke-width':1.5}));\n  adsG.appendChild(text(adsx0+adsW/2,adsy0+adsH/2-5,'ADS',{fill:'#d4c9b5','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  adsG.appendChild(text(adsx0+adsW/2,adsy0+adsH/2+7,'1115',{fill:'#d4c9b5','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  adsG.appendChild(text(adsx0+adsW/2,adsy0+adsH/2+18,'I²C 0x48',{fill:'#57534e','font-size':'6px','text-anchor':'middle','font-family':'Courier New'}));\n  adsG.appendChild(text(adsx0+adsW/2,adsy0-7,'ADS1115',{fill:'#a8a29e','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n\n  const adsPin={\n    VDD: hXY(10,'a'), GND: hXY(11,'a'),\n    SDA: hXY(12,'c'), SCL: hXY(13,'c'),\n    A0:  hXY(15,'d'), A1:  hXY(17,'d'),\n    A2:  hXY(18,'d'), A3:  hXY(19,'d'),\n  };\n  const adsPinCol={VDD:PURPLE,GND:WHITE,SDA:BROWN,SCL:ORANGE,A0:S0,A1:S1,A2:S2,A3:S3};\n  for(const[pn,{x,y}]of Object.entries(adsPin)){\n    const col=adsPinCol[pn];\n    adsG.appendChild(circ(x,y,3.5,{fill:col,stroke:'#fff','stroke-width':.7,'data-label':`ADS1115 ${pn}`}));\n    const side=['A0','A1','A2','A3','GND'].includes(pn)?'start':'end';\n    const tx=side==='start'?x+9:x-9;\n    adsG.appendChild(text(tx,y+3.5,pn,{fill:col,'font-size':'7px','text-anchor':side,'font-family':'Courier New','font-weight':'bold'}));\n  }\n\n  // ADS VDD/GND → rail wires (short, on breadboard)\n  const wiresG=g(); svg.insertBefore(wiresG,adsG);\n  // purple VDD → rail+\n  wiresG.appendChild(bezier(adsPin.VDD.x,adsPin.VDD.y,BBX+PX+CX['pL+'],BBY+PY+10*RHB,PURPLE,false,1.8));\n  // white GND → rail-\n  wiresG.appendChild(bezier(adsPin.GND.x,adsPin.GND.y,BBX+PX+CX['pL-'],BBY+PY+11*RHB,WHITE,false,1.8));\n\n  /* ═══════════════════════════════════════\n     ZONE 3 — EXTERNAL COMPONENTS  x=620\n  ═══════════════════════════════════════ */\n  const EX=640; // left edge of external zone\n\n  /* ── RELAY MODULE  top-right ── */\n  const RLY={x:EX,y:50,w:300,h:120};\n  const rlyG=g(); svg.appendChild(rlyG);\n  rlyG.appendChild(rect(RLY.x,RLY.y,RLY.w,RLY.h,{fill:'#1e3a8a',rx:4,stroke:'#3b82f6','stroke-width':1.8}));\n  rlyG.appendChild(text(RLY.x+RLY.w/2,RLY.y-10,'4-CHANNEL RELAY MODULE (active LOW)',{fill:'#93c5fd','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  // 4 relay slots\n  const rslW=(RLY.w-20)/4;\n  for(let i=0;i<4;i++){\n    const bx=RLY.x+10+i*rslW, by=RLY.y+10, bh=RLY.h-20;\n    rlyG.appendChild(rect(bx,by,rslW-6,bh,{fill:'#172554',rx:2,stroke:'#1d4ed8','stroke-width':1}));\n    rlyG.appendChild(circ(bx+(rslW-6)/2,by+14,6,{fill:'#ef4444',opacity:.9}));\n    rlyG.appendChild(text(bx+(rslW-6)/2,by+bh-18,`CH${i+1}`,{fill:'#60a5fa','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n    if(i===0){\n      rlyG.appendChild(text(bx+(rslW-6)/2,by+bh-6,'K1=Pump',{fill:'#3b82f6','font-size':'6.5px','text-anchor':'middle','font-family':'Courier New'}));\n    }\n  }\n  // relay control pins strip at top-left\n  const rlyPins={VCC:{x:RLY.x+10,y:RLY.y+RLY.h+18},GND:{x:RLY.x+36,y:RLY.y+RLY.h+18},IN1:{x:RLY.x+62,y:RLY.y+RLY.h+18}};\n  for(const[pn,{x,y}]of Object.entries(rlyPins)){\n    const col=pn==='VCC'?GRAY:pn==='GND'?DARKPURPLE:ORANGE;\n    rlyG.appendChild(circ(x,y,5,{fill:col,stroke:'#fff','stroke-width':.8,'data-label':`Relay ${pn}`}));\n    rlyG.appendChild(text(x,y+14,pn,{fill:col,'font-size':'7.5px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  }\n  // K1 power terminals\n  const K1pins={COM:{x:RLY.x+10+rslW/2,y:RLY.y-28},NO:{x:RLY.x+10+rslW/2+14,y:RLY.y-28}};\n  rlyG.appendChild(text(RLY.x+10+rslW/2+7,RLY.y-36,'K1',{fill:'#60a5fa','font-size':'8px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  for(const[pn,{x,y}]of Object.entries(K1pins)){\n    rlyG.appendChild(circ(x,y,4,{fill:'#374151',stroke:'#6b7280','stroke-width':1,'data-label':`Relay K1 ${pn}`}));\n    rlyG.appendChild(text(x,y-8,pn,{fill:'#6b7280','font-size':'7px','text-anchor':'middle','font-family':'Courier New'}));\n  }\n\n  /* ── PUMP  ── */\n  const PMP={x:EX,y:290,w:200,h:90};\n  const pmpG=g(); svg.appendChild(pmpG);\n  pmpG.appendChild(rect(PMP.x,PMP.y,PMP.w,PMP.h,{fill:'#1c1917',rx:4,stroke:'#3b82f6','stroke-width':1.5}));\n  pmpG.appendChild(text(PMP.x+PMP.w/2,PMP.y-10,'PUMP',{fill:'#60a5fa','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  pmpG.appendChild(text(PMP.x+PMP.w/2,PMP.y+28,'WayinTop 5V',{fill:'#60a5fa','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  pmpG.appendChild(text(PMP.x+PMP.w/2,PMP.y+44,'Submersible Pump',{fill:'#374151','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n  // pump wires\n  const pmpPos={x:PMP.x+30,y:PMP.y+PMP.h-18};\n  const pmpNeg={x:PMP.x+60,y:PMP.y+PMP.h-18};\n  pmpG.appendChild(circ(pmpPos.x,pmpPos.y,4,{fill:RED,stroke:'#fff','stroke-width':.8,'data-label':'Pump + (from Relay K1 NO)'}));\n  pmpG.appendChild(circ(pmpNeg.x,pmpNeg.y,4,{fill:'#374151',stroke:'#6b7280','stroke-width':1,'data-label':'Pump − (tied at Relay GND)'}));\n  pmpG.appendChild(text(pmpPos.x,pmpPos.y+14,'+',{fill:RED,'font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  pmpG.appendChild(text(pmpNeg.x,pmpNeg.y+14,'−',{fill:GRAY,'font-size':'9px','text-anchor':'middle','font-family':'Courier New'}));\n\n  /* pump ↔ relay K1 wires */\n  svg.appendChild(bezier(K1pins.NO.x,K1pins.NO.y,pmpPos.x,pmpPos.y,RED,false,2));\n\n  /* ── USB CHARGER ── */\n  const USB={x:EX+220,y:290,w:160,h:90};\n  const usbG=g(); svg.appendChild(usbG);\n  usbG.appendChild(rect(USB.x,USB.y,USB.w,USB.h,{fill:'#1c1917',rx:4,stroke:'#6b7280','stroke-width':1.2}));\n  usbG.appendChild(text(USB.x+USB.w/2,USB.y-10,'USB CHARGER',{fill:'#9ca3af','font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  usbG.appendChild(text(USB.x+USB.w/2,USB.y+30,'5V / 2A',{fill:'#6b7280','font-size':'11px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  usbG.appendChild(text(USB.x+USB.w/2,USB.y+48,'Dedicated (not Pi)',{fill:'#374151','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n  const usbPos={x:USB.x+30,y:USB.y+USB.h-18};\n  const usbNeg={x:USB.x+60,y:USB.y+USB.h-18};\n  usbG.appendChild(circ(usbPos.x,usbPos.y,4,{fill:RED,stroke:'#fff','stroke-width':.8,'data-label':'USB Charger + → Relay K1 COM'}));\n  usbG.appendChild(circ(usbNeg.x,usbNeg.y,4,{fill:'#374151',stroke:'#6b7280','stroke-width':1,'data-label':'USB Charger − → Relay GND'}));\n  usbG.appendChild(text(usbPos.x,usbPos.y+14,'+',{fill:RED,'font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  usbG.appendChild(text(usbNeg.x,usbNeg.y+14,'−',{fill:GRAY,'font-size':'9px','text-anchor':'middle','font-family':'Courier New'}));\n\n  // charger + → K1 COM\n  svg.appendChild(bezier(usbPos.x,usbPos.y,K1pins.COM.x,K1pins.COM.y,RED,false,2));\n  // charger − → relay GND\n  svg.appendChild(bezier(usbNeg.x,usbNeg.y,rlyPins.GND.x,rlyPins.GND.y,GRAY,false,1.8));\n  // pump − → relay GND\n  svg.appendChild(bezier(pmpNeg.x,pmpNeg.y,rlyPins.GND.x,rlyPins.GND.y,GRAY,true,1.8));\n\n  /* ── FLOAT SWITCH ── */\n  const FS={x:EX,y:450,w:200,h:80};\n  const fsG=g(); svg.appendChild(fsG);\n  fsG.appendChild(rect(FS.x,FS.y,FS.w,FS.h,{fill:'#1c1917',rx:4,stroke:GRAY,'stroke-width':1.2}));\n  fsG.appendChild(text(FS.x+FS.w/2,FS.y-10,'FLOAT SWITCH',{fill:GRAY,'font-size':'9px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n  fsG.appendChild(text(FS.x+FS.w/2,FS.y+26,'Normally Open',{fill:'#6b7280','font-size':'9px','text-anchor':'middle','font-family':'Courier New'}));\n  fsG.appendChild(text(FS.x+FS.w/2,FS.y+42,'LOW=water · HIGH=empty',{fill:'#374151','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n  const fsSig={x:FS.x+30,y:FS.y+FS.h-14};\n  fsG.appendChild(circ(fsSig.x,fsSig.y,4,{fill:GRAY,stroke:'#fff','stroke-width':.8,'data-label':'Float Switch signal → Pi GPIO17'}));\n  fsG.appendChild(text(fsSig.x,fsSig.y+14,'SIG',{fill:GRAY,'font-size':'7.5px','text-anchor':'middle','font-family':'Courier New'}));\n\n  /* ── MOISTURE SENSORS ×4 ── */\n  const SENSORS=[\n    {name:'German Chamomile',ch:'A0',color:S0, sigWire:'Grey', vcWire:'Purple',gdWire:'White', sigRow:15,sigCol:'d',vccRow:12,gndRow:13,y:580},\n    {name:'Peppermint',      ch:'A1',color:S1, sigWire:'Red',  vcWire:'Green', gdWire:'Yellow',sigRow:17,sigCol:'d',vccRow:13,gndRow:12,y:700},\n    {name:'English Lavender',ch:'A2',color:S2, sigWire:'Yellow',vcWire:'Orange',gdWire:'Grey', sigRow:18,sigCol:'d',vccRow:20,gndRow:20,y:820},\n    {name:'Borage',          ch:'A3',color:S3, sigWire:'Green',vcWire:'Purple',gdWire:'Blue',  sigRow:19,sigCol:'d',vccRow:24,gndRow:24,y:940},\n  ];\n\n  for(const s of SENSORS){\n    const SX={x:EX,y:s.y,w:300,h:72};\n    const sensG=g(); svg.appendChild(sensG);\n    sensG.appendChild(rect(SX.x,SX.y,SX.w,SX.h,{fill:'#1c1917',rx:4,stroke:s.color,'stroke-width':1.6}));\n    sensG.appendChild(text(SX.x+SX.w/2,SX.y+22,s.name,{fill:s.color,'font-size':'10px','text-anchor':'middle','font-family':'Courier New','font-weight':'bold'}));\n    sensG.appendChild(text(SX.x+SX.w/2,SX.y+36,`Capacitive Soil Moisture  ·  ${s.ch}`,{fill:'#57534e','font-size':'8px','text-anchor':'middle','font-family':'Courier New'}));\n    sensG.appendChild(text(SX.x+SX.w/2,SX.y+50,`VCC:${s.vcWire}  GND:${s.gdWire}  AOUT:${s.sigWire}`,{fill:'#44403c','font-size':'7.5px','text-anchor':'middle','font-family':'Courier New'}));\n\n    // sensor output pin marker\n    const sigP={x:SX.x+20,y:SX.y+SX.h-10};\n    sensG.appendChild(circ(sigP.x,sigP.y,4,{fill:s.color,stroke:'#fff','stroke-width':.8,'data-label':`${s.name} AOUT → ADS1115 ${s.ch}`}));\n\n    // AOUT wire: sensor → breadboard hole\n    const bbSig=hXY(s.sigRow,s.sigCol);\n    // highlight the target hole on breadboard\n    bbG.appendChild(circ(bbSig.x,bbSig.y,4,{fill:s.color,stroke:'#fff','stroke-width':.8,'data-label':`ADS1115 ${s.ch} · row ${s.sigRow}`}));\n    bbG.appendChild(text(bbSig.x+8,bbSig.y-6,`${s.ch} r${s.sigRow}`,{fill:s.color,'font-size':'6.5px','font-family':'Courier New'}));\n    // wire from sensor to breadboard\n    svg.appendChild(bezier(sigP.x,sigP.y,bbSig.x,bbSig.y,s.color,false,2));\n\n    // VCC dot on breadboard rail\n    const vH=hXY(s.vccRow,'pL+');\n    const gH=hXY(s.gndRow,'pL-');\n    bbG.appendChild(circ(vH.x,vH.y,3.5,{fill:RED,stroke:'#fff','stroke-width':.5,'data-label':`Sensor VCC rail row ${s.vccRow}`}));\n    bbG.appendChild(circ(gH.x,gH.y,3.5,{fill:BLUE,stroke:'#fff','stroke-width':.5,'data-label':`Sensor GND rail row ${s.gndRow}`}));\n  }\n\n  /* ═══════════════════════════════════════\n     WIRES: Pi → Breadboard\n  ═══════════════════════════════════════ */\n  const rPlusX=BBX+PX+CX['pL+'], rMinusX=BBX+PX+CX['pL-'];\n\n  function drawWire(pinNum,tx,ty,color,dashed){\n    const from=pinXY[pinNum]; if(!from)return;\n    wiresG.appendChild(bezier(from.x,from.y,tx,ty,color,dashed));\n    wiresG.appendChild(circ(from.x,from.y,3.5,{fill:color,opacity:.92}));\n    wiresG.appendChild(circ(tx,ty,3.5,{fill:color,opacity:.92}));\n  }\n\n  // Pi → Breadboard\n  drawWire(1, rPlusX,  BBY+PY+2*RHB,  RED,    false);\n  drawWire(9, rMinusX, BBY+PY+4*RHB,  BLUE,   false);\n  drawWire(3, adsPin.SDA.x, adsPin.SDA.y, BROWN,  false);\n  drawWire(5, adsPin.SCL.x, adsPin.SCL.y, ORANGE, false);\n\n  /* ═══════════════════════════════════════\n     WIRES: Pi → Relay\n  ═══════════════════════════════════════ */\n  function piToRelay(pinNum,tgt,color,dashed){\n    const from=pinXY[pinNum]; if(!from)return;\n    svg.appendChild(bezier(from.x,from.y,tgt.x,tgt.y,color,dashed,2.4));\n    svg.appendChild(circ(from.x,from.y,3.5,{fill:color,opacity:.92}));\n    svg.appendChild(circ(tgt.x,tgt.y,3.5,{fill:color,opacity:.92}));\n  }\n\n  piToRelay(2,  rlyPins.VCC, GRAY,       false);\n  piToRelay(6,  rlyPins.GND, DARKPURPLE, false);\n  piToRelay(13, rlyPins.IN1, ORANGE,     false);\n  piToRelay(11, fsSig,       GRAY,       true);\n\n  /* ── zone labels ── */\n  for(const[lx,ly,lbl]of[\n    [PI.x+PI.w/2, PI.y+PI.h+16, 'RASPBERRY PI'],\n    [BBX+BB_W/2,  BBY+BB_H+16,  'BREADBOARD'],\n    [EX+150,      40,            'EXTERNAL COMPONENTS'],\n  ]){\n    svg.appendChild(text(lx,ly,lbl,{fill:'#374151','font-size':'8px','text-anchor':'middle','font-family':'Courier New','letter-spacing':'.2em'}));\n  }\n\n  /* ── zone dividers ── */\n  const divY0=30, divY1=990;\n  for(const dx of[PI.x+PI.w+12, BBX+BB_W+12]){\n    svg.appendChild(line(dx,divY0,dx,divY1,{stroke:'#1f2937','stroke-width':1,'stroke-dasharray':'4,6'}));\n  }\n\n  /* ── tooltips ── */\n  svg.addEventListener('mousemove',e=>{\n    const lbl=e.target.getAttribute('data-label');\n    if(lbl){\n      tip.textContent=lbl; tip.style.display='block';\n      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-6)+'px';\n    } else { tip.style.display='none'; }\n  });\n  svg.addEventListener('mouseleave',()=>{tip.style.display='none';});\n})();\n<\u002Fscript>\n\n\n<\u002Fbody><\u002Fhtml>"
+  </script>
+</body>
+</html>
