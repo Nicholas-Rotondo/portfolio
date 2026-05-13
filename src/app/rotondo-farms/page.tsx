@@ -42,11 +42,6 @@ export default function RotondoFarms() {
 
             {/* Logo Header */}
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <img
-                    src="/rotondofarms.png"
-                    alt="Rotondo Farms"
-                    style={{ width: '220px', marginBottom: '0.5rem' }}
-                />
                 <p style={{ color: 'var(--text-secondary)' }}>Live sensor readings from the indoor grow system</p>
             </div>
 

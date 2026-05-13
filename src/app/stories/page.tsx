@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
     title: 'Stories | Portfolio',
@@ -11,9 +12,30 @@ const stories = [
         title: 'At the Foot of a Mountain',
         genre: 'Fantasy',
         date: 'Mar 2025',
-        excerpt:
-            "A story of a blacksmith striking the elements of life.",
+
+        excerpt: 'A story of a blacksmith striking the elements of life.',
         gradient: 'gradient-1',
+        pdf: '/stories/at-the-foot-of-a-mountain.pdf',
+    },
+    {
+        id: 'the-man-who-swam-to-the-moon',
+        title: 'The Man Who Swam to the Moon',
+        genre: 'Fantasy',
+        date: 'Mar 2025',
+
+        excerpt: 'A journey that where the moon stirs the waves of the heart',
+        gradient: 'gradient-2',
+        pdf: '/stories/the-man-who-swam-to-the-moon.pdf',
+    },
+    {
+        id: 'a-tale-of-two-stones',
+        title: 'A Tale of Two Stones',
+        genre: 'Fantasy',
+        date: 'Mar 2025',
+        // TODO: excerpt needs to be updated
+        excerpt: 'A tale of a young man travelling with the wind',
+        gradient: 'gradient-3',
+        pdf: '/stories/a-tale-of-two-stones.pdf',
     },
 ];
 
@@ -22,7 +44,26 @@ export default function StoriesPage() {
         <div className="container">
             <div className="section-header">
                 <h2>Short Stories</h2>
-                <p>A collection of fiction exploring ideas, emotions, and possibilities</p>
+                <p>Three short stories compiled in <em>A Palette of Life</em>.</p>
+            </div>
+
+            <div className="book-feature">
+                <Image
+                    src="/palette-of-life-cover.png"
+                    alt="A Palette of Life — book cover"
+                    width={440}
+                    height={660}
+                    className="book-feature-cover"
+                    priority
+                />
+                <div className="book-feature-content">
+                    <h3>A Palette of Life</h3>
+                    <p>
+                        A compilation of three short fantasy stories exploring craft, longing,
+                        and the quiet weight of small moments. Each story is available to read
+                        as a PDF below.
+                    </p>
+                </div>
             </div>
 
             <div className="stories-grid">
@@ -36,7 +77,12 @@ export default function StoriesPage() {
                             </div>
                             <h3 className="story-title">{story.title}</h3>
                             <p className="story-excerpt">{story.excerpt}</p>
-                            <a href={`/stories/${story.id}`} className="read-more">
+                            <a
+                                href={story.pdf}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="read-more"
+                            >
                                 Read story
                                 <svg
                                     viewBox="0 0 24 24"
